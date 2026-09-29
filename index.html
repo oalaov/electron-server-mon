@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <header class="header" id="app-name-header">
+        <div id="app-name-header-text">
+            <h1> Server Monitor </h1>
+        </div>
+    </header>
+    <main>
+        <section class="connect-fields-buttons">
+            <div class="connect-input-fields">
+                <div class="input-field">
+                        <div id="host-field">
+                        <label for="host"> Имя хоста </label>
+                        <input type="text" id="host" value="localhost" placeholder="192.168.xxx.xxx">
+                    </div>
+
+                    <div id="port-field">
+                        <label for="port"> Порт </label>
+                        <input type="number" id="port" value="2222" placeholder="22">
+                    </div>
+
+                    <div id="username-field">
+                        <label for="username"> Имя пользователя </label>
+                        <input type="text" id="username" value="student" placeholder="root">
+                    </div>
+
+                    <div id="password-field">
+                        <label for="password"> Пароль </label>
+                        <input type="password" id="password" value="student123" placeholder="********">
+                    </div>
+
+                    <div id="command-field">
+                        <label for="commmand"> Введите необходимую команду (необязательно) </label>
+                        <input type="text" id="commmand" value="student123" placeholder="********">
+                    </div>
+                </div>
+            </div>
+
+            <div id="connect-buttons">
+                <button id="btn-connect" class="btn"> Подключиться </button>
+                <button id="btn-refresh" class="btn" disabled> Обновить </button>
+                <button id="btn-command" class="btn"> Отправить </button>
+            </div>
+
+            <p id="status" class="status">Не подключено</p> 
+        </section>
+
+        <section id="metrics" class="metrics"> </section>
+
+        <section id="commmand-section">
+            <pre id="output" class="output">
+                
+            </pre>
+        </section>
+    </main>
+    <script src="renderer.js"> </script>
+    
+</body>
+</html>

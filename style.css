@@ -1,0 +1,32 @@
+#app-name-header-text{
+    width: max-content;
+    padding-left: 25px;
+    padding-right: 25px;
+    margin-bottom: 25px;
+    border: 2px solid black;
+    border-radius: 50px;
+}
+
+#app-name-header-text:hover{
+    width: max-content;
+    padding-left: 35px;
+    padding-right: 35px;
+    margin-bottom: 35px;
+    border: 2px solid black;
+    border-radius: 50px;
+    background-color: black;
+    color: white;
+}
+
+body{
+    background: white;
+}
+
+#metrics{
+    background-color: gray;
+}
+
+#app-name-header{
+    background: gray;
+    
+}
