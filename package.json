@@ -6,10 +6,11 @@
   "author": "oalaov",
   "license": "MIT",
   "scripts": {
-    "start": "electron .",
-    "build:linux": "electron-builder --linux",
-    "build:win": "electron-builder --win"
-  },
+  "start": "electron .",
+  "postinstall": "electron-builder install-app-deps",
+  "build:linux": "electron-builder --linux",
+  "build:win": "electron-builder --win"
+  }, 
   "build": {
     "appId": "com.oalaov.servermon",
     "productName": "Server Monitor",
@@ -27,12 +28,16 @@
       "package.json"
     ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Utility",
       "icon": "build/icon.png"
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "build/icon.ico"
     }
   },
@@ -41,7 +46,14 @@
     "node-ssh": "^13.0.0"
   },
   "devDependencies": {
+    "@electron/rebuild": "^3.7.2",
     "electron": "^28.0.0",
     "electron-builder": "^24.0.0"
+  },
+  "allowScripts": {
+    "electron@28.3.3": true,
+    "better-sqlite3@11.10.0": true,
+    "ssh2@1.17.0": true,
+    "cpu-features@0.0.10": true
   }
 }
