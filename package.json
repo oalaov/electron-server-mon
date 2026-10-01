@@ -6,14 +6,18 @@
   "author": "oalaov",
   "license": "MIT",
   "scripts": {
-  "start": "electron .",
-  "postinstall": "electron-builder install-app-deps",
-  "build:linux": "electron-builder --linux",
-  "build:win": "electron-builder --win"
-  }, 
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "build:linux": "electron-builder --linux",
+    "build:win": "electron-builder --win"
+  },
   "build": {
     "appId": "com.oalaov.servermon",
     "productName": "Server Monitor",
+    "publish": {
+      "provider": "github",
+      "releaseType": "draft"
+    },
     "directories": {
       "output": "dist"
     },
@@ -28,16 +32,12 @@
       "package.json"
     ],
     "linux": {
-      "target": [
-        "AppImage"
-      ],
+      "target": ["AppImage"],
       "category": "Utility",
       "icon": "build/icon.png"
     },
     "win": {
-      "target": [
-        "nsis"
-      ],
+      "target": ["nsis"],
       "icon": "build/icon.ico"
     }
   },
