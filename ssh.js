@@ -67,6 +67,18 @@ class SSHClient {
     };
   }
 
+  async getCPU() {
+  const out = await this.exec("top -bn1 | grep 'Cpu(s)'");
+
+  const match = out.match(/([\d.]+)\s+id/);
+  if (!match) return 0;
+
+  const idle = parseFloat(match[1]);
+  const used = Math.round((100 - idle) * 10) / 10;
+
+  return used;
+}
+
   async getDisk() {
     const out = await this.exec('df -h');
     const lines = out.split('\n');
@@ -90,17 +102,19 @@ class SSHClient {
   }
 
   async getMetrics() {
-    const [uptime, ramData, disk] = await Promise.all([
+    const [uptime, ramData, disk, cpu] = await Promise.all([
       this.getUptime(),
       this.getRAM(),
-      this.getDisk()
+      this.getDisk(),
+      this.getCPU()
     ]);
 
     return {
       uptime,
       ram: ramData?.ram,
       swap: ramData?.swap,
-      disk
+      disk,
+      cpu
     };
   }
 
