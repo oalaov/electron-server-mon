@@ -1,8 +1,9 @@
 
 const ALLOWED_COMMANDS = [
   'uptime', 'whoami', 'ls', 'df', 'free',
-  'hostname', 'uname', 'echo', 'date', 'pwd', 'cd'
+  'hostname', 'uname', 'echo', 'date', 'pwd'
 ];
+
 
 const FORBIDDEN_CHARS = /[;&|`$<>\n\r\\]/;
 

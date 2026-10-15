@@ -22,7 +22,7 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
-  if (!app.isPackaged) win.webContents.openDevTools();
+  if (!app.isPackaged) win.webContents.openDevTools();   
 }
 
 app.whenReady().then(() => {
@@ -100,7 +100,7 @@ ipcMain.handle('get-metrics', async () => {
 
     const metrics = await currentClient.getMetrics();
 
-    // Сохраняем в БД
+   
     if (currentServerId) {
       db.saveMetric(currentServerId, metrics);
     }

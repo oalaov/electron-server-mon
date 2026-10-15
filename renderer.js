@@ -5,6 +5,10 @@ const metricsEl = document.getElementById('metrics');
 const btnCommand = document.getElementById('btn-command');
 const btnTheme = document.getElementById('btn-theme');
 
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 let ramChart = null;
 let cpuChart = null;
 
@@ -38,11 +42,18 @@ btnConnect.addEventListener('click', async () => {
 });
 
 btnCommand.addEventListener('click', async () => {
-  const command = document.getElementById('command').value.trim();   
+  const command = document.getElementById('command').value.trim();
+  const outputEl = document.getElementById('output');
 
   if (!command) {
     setStatus('Введите команду', 'error');
     return;
+  }
+
+ 
+  if (!outputEl.dataset.used) {
+    outputEl.textContent = '';
+    outputEl.dataset.used = '1';
   }
 
   btnCommand.disabled = true;
@@ -54,11 +65,12 @@ btnCommand.addEventListener('click', async () => {
 
   if (result.success) {
     setStatus('Команда выполнена', 'success');
-    const outputEl = document.getElementById('output');
-    outputEl.textContent += `$ ${command}\n\n${result.output}`;
+    outputEl.textContent += `$ ${command}\n${result.output}\n\n`;
   } else {
     setStatus('Ошибка: ' + result.error, 'error');
+    outputEl.textContent += `$ ${command}\n[Ошибка] ${result.error}\n\n`;
   }
+  outputEl.scrollTop = outputEl.scrollHeight;
 });
 
 let refreshInterval = null;
@@ -76,7 +88,7 @@ async function updateMetrics() {
 
   if (result.success) {
     renderMetrics(result.metrics);
-    renderCharts();   // ← ЭТОГО НЕ ХВАТАЛО
+    renderCharts();  
     setStatus('Метрики обновлены: ' + new Date().toLocaleTimeString(), 'success');
   } else {
     setStatus('Ошибка обновления: ' + result.error, 'error');
@@ -97,46 +109,51 @@ function setStatus(text, type) {
 }
 
 function renderMetrics(metrics) {
+  const cpu = Number(metrics.cpu) || 0;
+  const ram = metrics.ram || { used: 0, total: 0, percent: 0 };
+  const swap = metrics.swap || { used: 0, total: 0, percent: 0 };
+  const disk = metrics.disk || { filesystem: '—', used: '—', size: '—', percent: 0 };
+
   metricsEl.innerHTML = `
     <div class="metric-card">
       <h3 class="metric-card__title">Uptime</h3>
-      <p class="metric-card__value">${metrics.uptime}</p>
+      <p class="metric-card__value">${esc(metrics.uptime)}</p>
     </div>
 
     <div class="metric-card">
       <h3 class="metric-card__title">CPU</h3>
-      <p class="metric-card__value">${metrics.cpu}%</p>
+      <p class="metric-card__value">${cpu}%</p>
       <div class="metric-bar">
-        <div class="metric-bar__fill" style="width: ${metrics.cpu}%"></div>
+        <div class="metric-bar__fill" style="width: ${cpu}%"></div>
       </div>
-      <p class="metric-card__percent">${metrics.cpu}%</p>
+      <p class="metric-card__percent">${cpu}%</p>
     </div>
 
     <div class="metric-card">
       <h3 class="metric-card__title">RAM</h3>
-      <p class="metric-card__value">${metrics.ram.used} / ${metrics.ram.total} MB</p>
+      <p class="metric-card__value">${ram.used} / ${ram.total} MB</p>
       <div class="metric-bar">
-        <div class="metric-bar__fill" style="width: ${metrics.ram.percent}%"></div>
+        <div class="metric-bar__fill" style="width: ${ram.percent}%"></div>
       </div>
-      <p class="metric-card__percent">${metrics.ram.percent}%</p>
+      <p class="metric-card__percent">${ram.percent}%</p>
     </div>
 
     <div class="metric-card">
       <h3 class="metric-card__title">Swap</h3>
-      <p class="metric-card__value">${metrics.swap.used} / ${metrics.swap.total} MB</p>
+      <p class="metric-card__value">${swap.used} / ${swap.total} MB</p>
       <div class="metric-bar">
-        <div class="metric-bar__fill" style="width: ${metrics.swap.percent}%"></div>
+        <div class="metric-bar__fill" style="width: ${swap.percent}%"></div>
       </div>
-      <p class="metric-card__percent">${metrics.swap.percent}%</p>
+      <p class="metric-card__percent">${swap.percent}%</p>
     </div>
 
     <div class="metric-card">
-      <h3 class="metric-card__title">Диск (${metrics.disk.filesystem})</h3>
-      <p class="metric-card__value">${metrics.disk.used} / ${metrics.disk.size}</p>
+      <h3 class="metric-card__title">Диск (${esc(disk.filesystem)})</h3>
+      <p class="metric-card__value">${esc(disk.used)} / ${esc(disk.size)}</p>
       <div class="metric-bar">
-        <div class="metric-bar__fill" style="width: ${metrics.disk.percent}%"></div>
+        <div class="metric-bar__fill" style="width: ${disk.percent}%"></div>
       </div>
-      <p class="metric-card__percent">${metrics.disk.percent}%</p>
+      <p class="metric-card__percent">${disk.percent}%</p>
     </div>
   `;
 }
