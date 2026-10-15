@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
     <link rel="stylesheet" href="style.css">
     <title>Server Monitor</title>
 </head>
@@ -31,12 +33,12 @@
 
                 <div class="field">
                     <label for="username">Имя пользователя</label>
-                    <input type="text" id="username" value="student" placeholder="root">
+                    <input type="text" id="username" placeholder="root">
                 </div>
 
                 <div class="field">
                     <label for="password">Пароль</label>
-                    <input type="password" id="password" value="student123" placeholder="********">
+                    <input type="password" id="password" placeholder="********">
                 </div>
 
                 <button id="btn-connect" class="btn btn--primary">Подключиться</button>

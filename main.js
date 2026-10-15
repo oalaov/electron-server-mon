@@ -2,9 +2,10 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { SSHClient } = require('./ssh');
 const db = require('./database');
+const { isCommandAllowed } = require('./validate');
 
 let currentClient = null;
-let currentServerId = null;   // ← ID сервера в БД
+let currentServerId = null;   
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -21,11 +22,15 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
-  win.webContents.openDevTools();
+  if (!app.isPackaged) win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
-  db.initDB();   
+  db.initDB();
+  db.cleanOldMetrics();
+  setInterval(() => {
+    try { db.cleanOldMetrics(); } catch (e) { /* БД уже закрыта */ }
+  }, 60 * 60 * 1000);
   createWindow();
 
   app.on('activate', () => {
@@ -71,9 +76,11 @@ ipcMain.handle('connect', async (event, config) => {
           host: config.host,
           port: config.port,
           username: config.username,
-          password: config.password
+          password: null   
         });
       }
+
+      db.addEvent(currentServerId, 'info', `Подключено к ${config.host}:${config.port}`);
 
       console.log('Подключено, server_id:', currentServerId);
       return { success: true };
@@ -107,6 +114,7 @@ ipcMain.handle('get-metrics', async () => {
 ipcMain.handle('disconnect', async () => {
   try {
     if (currentClient) {
+      if (currentServerId) db.addEvent(currentServerId, 'info', 'Отключено от сервера');
       currentClient.disconnect();
       currentClient = null;
       currentServerId = null;
@@ -121,6 +129,10 @@ ipcMain.handle('exec', async (event, command) => {
   try {
     if (!currentClient) {
       return { success: false, error: 'Нет активного подключения' };
+    }
+    if (!isCommandAllowed(command)) {
+      if (currentServerId) db.addEvent(currentServerId, 'warning', `Отклонена команда: ${String(command).slice(0, 100)}`);
+      return { success: false, error: 'Команда не разрешена' };
     }
     const output = await currentClient.exec(command);
     return { success: true, output };
@@ -138,7 +150,7 @@ ipcMain.handle('get-history', async () => {
     const rawHistory = db.getMetricsHistory(currentServerId, 30);
 
     const history = rawHistory.map(row => ({
-      time: new Date(row.timestamp).toLocaleTimeString('ru-RU', {
+      time: new Date(row.timestamp.replace(' ', 'T') + 'Z').toLocaleTimeString('ru-RU', {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit'

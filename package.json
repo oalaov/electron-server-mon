@@ -29,6 +29,7 @@
       "style.css",
       "ssh.js",
       "database.js",
+      "validate.js",
       "package.json"
     ],
     "linux": {

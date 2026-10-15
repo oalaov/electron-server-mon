@@ -1,4 +1,4 @@
-// Получаем элементы
+
 const btnConnect = document.getElementById('btn-connect');
 const statusEl = document.getElementById('status');
 const metricsEl = document.getElementById('metrics');
@@ -38,7 +38,7 @@ btnConnect.addEventListener('click', async () => {
 });
 
 btnCommand.addEventListener('click', async () => {
-  const command = document.getElementById('command').value.trim();   // ← исправил commmand → command
+  const command = document.getElementById('command').value.trim();   
 
   if (!command) {
     setStatus('Введите команду', 'error');
