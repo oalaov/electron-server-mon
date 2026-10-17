@@ -9,7 +9,9 @@
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
     "build:linux": "electron-builder --linux",
-    "build:win": "electron-builder --win"
+    "build:win": "electron-builder --win",
+    "test": "node --test tests/unit.test.js",
+    "load": "node tests/load-test.js"
   },
   "build": {
     "appId": "com.oalaov.servermon",
@@ -33,12 +35,16 @@
       "package.json"
     ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Utility",
       "icon": "build/icon.png"
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     }
   },
   "dependencies": {

@@ -1,10 +1,11 @@
-
+// Проверка команд, отправляемых на удалённый сервер.
+// Разрешены только безопасные команды просмотра состояния.
 const ALLOWED_COMMANDS = [
   'uptime', 'whoami', 'ls', 'df', 'free',
   'hostname', 'uname', 'echo', 'date', 'pwd'
 ];
 
-
+// Символы, позволяющие выполнить несколько команд, подстановку или перенаправление
 const FORBIDDEN_CHARS = /[;&|`$<>\n\r\\]/;
 
 function isCommandAllowed(command) {

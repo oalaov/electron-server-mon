@@ -1,11 +1,12 @@
-
+// Получаем элементы
 const btnConnect = document.getElementById('btn-connect');
 const statusEl = document.getElementById('status');
 const metricsEl = document.getElementById('metrics');
 const btnCommand = document.getElementById('btn-command');
+const btnDisconnect = document.getElementById('btn-disconnect');
 const btnTheme = document.getElementById('btn-theme');
 
-
+// Экранирование данных, полученных с сервера (защита от XSS)
 const esc = s => String(s ?? '').replace(/[&<>"']/g,
   c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -35,8 +36,25 @@ btnConnect.addEventListener('click', async () => {
   if (result.success) {
     setStatus('Подключено к ' + config.host, 'success');
     btnCommand.disabled = false;
+    btnDisconnect.disabled = false;
     startAutoRefresh();
   } else {
+    setStatus('Ошибка: ' + result.error, 'error');
+  }
+});
+
+btnDisconnect.addEventListener('click', async () => {
+  btnDisconnect.disabled = true;
+  stopAutoRefresh();
+
+  const result = await window.api.disconnect();
+
+  if (result.success) {
+    metricsEl.innerHTML = '';
+    btnCommand.disabled = true;
+    setStatus('Отключено от сервера', 'success');
+  } else {
+    btnDisconnect.disabled = false;
     setStatus('Ошибка: ' + result.error, 'error');
   }
 });
@@ -50,7 +68,7 @@ btnCommand.addEventListener('click', async () => {
     return;
   }
 
- 
+  // Первый вывод заменяет заглушку, дальше результаты накапливаются
   if (!outputEl.dataset.used) {
     outputEl.textContent = '';
     outputEl.dataset.used = '1';
@@ -67,6 +85,8 @@ btnCommand.addEventListener('click', async () => {
     setStatus('Команда выполнена', 'success');
     outputEl.textContent += `$ ${command}\n${result.output}\n\n`;
   } else {
+    // Ошибку показываем в консоли вывода: строка статуса находится в другом
+    // блоке и перезаписывается автообновлением метрик каждые 5 секунд
     setStatus('Ошибка: ' + result.error, 'error');
     outputEl.textContent += `$ ${command}\n[Ошибка] ${result.error}\n\n`;
   }
@@ -88,7 +108,7 @@ async function updateMetrics() {
 
   if (result.success) {
     renderMetrics(result.metrics);
-    renderCharts();  
+    renderCharts();   // ← ЭТОГО НЕ ХВАТАЛО
     setStatus('Метрики обновлены: ' + new Date().toLocaleTimeString(), 'success');
   } else {
     setStatus('Ошибка обновления: ' + result.error, 'error');

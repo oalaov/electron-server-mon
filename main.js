@@ -5,7 +5,7 @@ const db = require('./database');
 const { isCommandAllowed } = require('./validate');
 
 let currentClient = null;
-let currentServerId = null;   
+let currentServerId = null;   // ← ID сервера в БД
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -22,7 +22,7 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
-  if (!app.isPackaged) win.webContents.openDevTools();   
+  if (!app.isPackaged) win.webContents.openDevTools();   // только при разработке
 }
 
 app.whenReady().then(() => {
@@ -76,7 +76,7 @@ ipcMain.handle('connect', async (event, config) => {
           host: config.host,
           port: config.port,
           username: config.username,
-          password: null   
+          password: null   // пароль в БД не сохраняем
         });
       }
 
@@ -100,7 +100,7 @@ ipcMain.handle('get-metrics', async () => {
 
     const metrics = await currentClient.getMetrics();
 
-   
+    // Сохраняем в БД
     if (currentServerId) {
       db.saveMetric(currentServerId, metrics);
     }
@@ -150,6 +150,7 @@ ipcMain.handle('get-history', async () => {
     const rawHistory = db.getMetricsHistory(currentServerId, 30);
 
     const history = rawHistory.map(row => ({
+      // SQLite хранит время в UTC без указания пояса — добавляем 'Z'
       time: new Date(row.timestamp.replace(' ', 'T') + 'Z').toLocaleTimeString('ru-RU', {
         hour: '2-digit',
         minute: '2-digit',

@@ -133,9 +133,23 @@ body {
 }
 
 .connect-form .btn {
-    grid-column: 1 / -1;   
-    justify-self: start;
     padding: 10px 24px;
+}
+
+.btn-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+}
+
+.btn--secondary {
+    background: #e8eaed;
+    color: #202124;
+}
+
+body.dark .btn--secondary {
+    background: #2a2a2a;
+    color: #e5e7eb;
 }
 
 .status {
